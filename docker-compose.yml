@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
     container_name: dreamory_beta_db
     ports:
       - "5433:5432"
