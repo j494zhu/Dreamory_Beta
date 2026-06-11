@@ -106,3 +106,21 @@ async def exists(chat_id: UUID) -> bool:
     async with get_conn() as conn:
         chat_exists = await conn.fetchval(sql, chat_id)
         return chat_exists
+
+async def get_params(chat_id: UUID) -> dict | None:
+    sql = "select params from chats where chat_id = $1"
+    async with get_conn() as conn:
+        row = await conn.fetchrow(sql, chat_id)
+        if row is None:
+            print(f"<!!> <Error: chat not found when getting params>")
+            return None 
+        return row["params"]
+
+async def update_params(chat_id: UUID, params: dict) -> bool:
+    sql = "update chats set params = $1 where chat_id = $2 returning chat_id"
+    async with get_conn() as conn:
+        result = await conn.fetchrow(sql, params, chat_id)
+        if result is None:
+            print(f"Error while updating chat params")
+            return False 
+        return True

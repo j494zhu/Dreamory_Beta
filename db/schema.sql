@@ -8,9 +8,12 @@ create table if not exists chats (
     user_id uuid not null, 
     title varchar(255), 
     messages jsonb not null default '[]'::jsonb, 
+    params jsonb not null default '{}'::jsonb,
     last_used timestamptz not null default now(),
     last_compressed timestamptz
 ); 
+
+alter table chats add column if not exists params jsonb not null default '{}'::jsonb;
 
 create table if not exists archives (
     chat_id uuid primary key, 
