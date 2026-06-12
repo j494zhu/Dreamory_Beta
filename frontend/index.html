@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dreamory</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h1>Dreamory</h1>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="user-area">
+        <span id="userIdDisplay" class="user-id">无用户</span>
+        <button id="btnNewUser" class="btn btn-sm">新建用户</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">
+        <span>对话列表</span>
+        <button id="btnNewChat" class="btn btn-sm" disabled>新建对话</button>
+      </div>
+      <ul id="chatList" class="chat-list"></ul>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="noChatSelected" class="placeholder">← 左侧新建用户 / 新建对话,或选择一个已有对话</div>
+
+    <div id="chatArea" class="hidden">
+      <div class="chat-header">
+        <h2 id="chatTitle">对话</h2>
+        <button id="btnRename" class="btn btn-sm">重命名</button>
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="input-area">
+        <textarea id="inputMsg" rows="2" placeholder="说点什么…" disabled></textarea>
+        <button id="btnSend" class="btn" disabled>发送</button>
+      </div>
+
+      <div class="toolbar">
+        <button id="btnShowMessages" class="btn btn-sm">显示消息数组</button>
+        <button id="btnShowThinking" class="btn btn-sm">查看思考过程</button>
+        <button id="btnPersona" class="btn btn-sm">修改初始人设</button>
+      </div>
+
+      <div id="debugPanel" class="debug-panel hidden"></div>
+    </div>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

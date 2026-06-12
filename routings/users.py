@@ -19,8 +19,6 @@ async def get_user(user_id: UUID):
     return user
 
 @router.get("/{user_id}/chats")
-async def get_all_titles(user_id: UUID):
-    titles = await chats.get_titles(user_id)
-    if not titles:
-        raise HTTPException(status_code=404, detail="Error: Failed to load chat titles")
-    return titles
+async def get_user_chats(user_id: UUID):
+    """侧边栏用:返回该用户的对话列表 [{chat_id, title}],无对话返回 []。"""
+    return await chats.list_summaries(user_id)

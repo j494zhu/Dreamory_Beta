@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from db.pool import init_pool, close_pool, get_conn 
 from db.init_db import init_db
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -25,6 +27,13 @@ app = FastAPI(lifespan=start_app)
 
 app.include_router(users_router)
 app.include_router(chats_router)
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+
+@app.get("/")
+async def serve_frontend():
+    return FileResponse("frontend/index.html")
 
 
 if __name__ == "__main__":

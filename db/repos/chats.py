@@ -43,7 +43,7 @@ async def update_last_used(chat_id: UUID) -> bool:
         return True
 
 async def get_by_id(chat_id: UUID) -> dict | None:
-    sql = "select chat_id, user_id, title, messages, last_used, last_compressed from chats where chat_id = $1"
+    sql = "select chat_id, user_id, title, messages, persona, last_used, last_compressed from chats where chat_id = $1"
     async with get_conn() as conn:
         result = await conn.fetchrow(sql, chat_id)
         if result is None:
@@ -60,6 +60,14 @@ async def get_by_userid(uid: UUID) -> list[dict] | None:
     except Exception as e:
         print(f"Error while fetching user's chats, user_id={uid}: {e}")
         return None
+
+async def list_summaries(uid: UUID) -> list[dict]:
+    """侧边栏用:每个 chat 的 id + title,按最近使用倒序。无对话返回 []。"""
+    sql = "select chat_id, title from chats where user_id = $1 order by last_used desc"
+    async with get_conn() as conn:
+        rows = await conn.fetch(sql, uid)
+        return [dict(row) for row in rows]
+
 
 async def get_titles(uid: UUID) -> list[str | None] | None:
     sql = "select title from chats where user_id = $1"
@@ -122,5 +130,41 @@ async def update_params(chat_id: UUID, params: dict) -> bool:
         result = await conn.fetchrow(sql, params, chat_id)
         if result is None:
             print(f"Error while updating chat params")
-            return False 
+            return False
+        return True
+
+
+# ── affect_engine 存取:affect 存 AffectState.to_dict(),persona 存 Persona.to_dict() ──
+# 新建 chat 时 affect 为空 dict {}(falsy),pipeline 据此判定"无存档" → 用 fresh state。
+async def get_affect(chat_id: UUID) -> dict | None:
+    sql = "select affect from chats where chat_id = $1"
+    async with get_conn() as conn:
+        row = await conn.fetchrow(sql, chat_id)
+        return row["affect"] if row is not None else None
+
+
+async def set_affect(chat_id: UUID, affect: dict) -> bool:
+    sql = "update chats set affect = $1 where chat_id = $2 returning chat_id"
+    async with get_conn() as conn:
+        result = await conn.fetchrow(sql, affect, chat_id)
+        if result is None:
+            print(f"<!!> <Error: Unable to set affect>")
+            return False
+        return True
+
+
+async def get_persona(chat_id: UUID) -> dict | None:
+    sql = "select persona from chats where chat_id = $1"
+    async with get_conn() as conn:
+        row = await conn.fetchrow(sql, chat_id)
+        return row["persona"] if row is not None else None
+
+
+async def set_persona(chat_id: UUID, persona: dict) -> bool:
+    sql = "update chats set persona = $1 where chat_id = $2 returning chat_id"
+    async with get_conn() as conn:
+        result = await conn.fetchrow(sql, persona, chat_id)
+        if result is None:
+            print(f"<!!> <Error: Unable to set persona>")
+            return False
         return True
